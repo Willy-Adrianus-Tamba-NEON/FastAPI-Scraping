@@ -20,7 +20,7 @@ add_news_example = json.dumps({
 # Endpoint
 @router.get("/get_list_article")
 async def get_list_article():
-    result = get_list_article()
+    result = NewsController.get_list_article()
     return result
 
 @router.get("/get_url_news_detail")
