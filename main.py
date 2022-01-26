@@ -1,3 +1,4 @@
+from sys import prefix
 from fastapi import FastAPI, Depends, HTTPException, Security, status
 from fastapi.security.api_key import APIKeyHeader
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -9,7 +10,7 @@ from fastapi.openapi.docs import (
     get_swagger_ui_oauth2_redirect_html
 )
 PARAMS = Config.PARAMS
-from apps.routers import InformationRouter, LoanRouter
+from apps.routers import InformationRouter, NewsRouter
 from fastapi.staticfiles import StaticFiles
 
 
@@ -36,8 +37,8 @@ async def custom_swagger_ui_html():
     if PARAMS.ENVIRONMENT == 'development':
         openapi_url = app.openapi_url
     elif PARAMS.ENVIRONMENT in ['staging', 'production']:
-        openapi_url = f"/neon{app.openapi_url}"
-        # openapi_url = app.openapi_url
+        # openapi_url = f"/neon{app.openapi_url}"
+        openapi_url = app.openapi_url
 
     Log.info(openapi_url)
     return get_swagger_ui_html(
@@ -55,7 +56,9 @@ app.include_router(
 )
 
 app.include_router(
-    LoanRouter.router,
-    tags=["Loan"],
+    NewsRouter.router,
+    tags=["katadata"],
+    prefix="/katadata",
     dependencies=[Depends(verify_token)]
 )
+

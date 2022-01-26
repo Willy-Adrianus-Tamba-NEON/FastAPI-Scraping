@@ -58,4 +58,3 @@ def get_news_detail():
             
     return all_links
 
-get_news_detail()
