@@ -1,5 +1,5 @@
 from apps.helper import Log
-from apps.models import schema
+from apps.models import schema, db
 from unittest import result
 from apps.utils.News import get_news_detail, get_url_news_detail, get_list_article
 from apps.schemas.Response import BaseResponse
@@ -54,17 +54,20 @@ class NewsController(object):
     def get_news_detail(cls):
         result = BaseResponse()
         result.status = 404
-        # try:
-        data = get_news_detail()
-        result.status = 200
-        result.message = "Success"
-        result.data = data
-        Log.info(result.message)
+        try:
+            data = get_news_detail()
+            result.status = 200
+            result.message = "Success"
+            result.data = data
+            Log.info(result.message)
 
-        # except Exception as e:
-        #     Log.error(e)
-        #     result.status = 400
-        #     result.message = str(e)
+            # Insert scrape ke db
+            db.table('kata_data').insert(data)
+
+        except Exception as e:
+            Log.error(e)
+            result.status = 400
+            result.message = str(e)
 
         return result
 
