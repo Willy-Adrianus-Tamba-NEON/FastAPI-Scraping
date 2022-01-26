@@ -58,3 +58,57 @@ def get_news_detail():
             
     return all_links
 
+def get_list_article():
+    articleList = []
+    URL = "https://katadata.co.id/"
+    soup = requestPage(URL)
+    article = soup.select('article')
+    for x in range(len(article)):
+        title = article[x].select_one('h2 a')
+        link = article[x].select_one('a')
+        if title is not None:
+            articleList.append(
+                {
+                    "title": title.text.strip(),
+                    "link": link['href']
+                }
+            )
+    
+    return articleList
+
+def get_url_news_detail(scrapeURL):
+    detailList = []
+    soup = requestPage(scrapeURL)
+    article = soup.select('article')
+    fullPar = ""
+    listPar = []
+    for x in article:
+        title = x.select_one('h1.detail-title')
+        link = scrapeURL
+        img_src = x.select_one('div.detail-image img.img-fullwidth')
+        author = x.select_one('div.detail-author-name')
+        publisheddate = x.select_one('div.detail-date')
+        if title is not None:
+            detailList.append(
+                {
+                    "title": title.text.strip(),
+                    "link": scrapeURL,
+                    "img_src": img_src['src'],
+                    "author": author.text.strip("Oleh \n"),
+                    "publisheddate": publisheddate.text,
+                    "content": ""
+                }
+            )
+    
+        fullContent = soup.find_all('p')
+        for y in range(0, len(fullContent)):
+            parag = fullContent[y].text.replace("Dapatkan informasi terkini dan terpercaya seputar ekonomi, bisnis, data, politik, dan lain-lain, langsung lewat email Anda.", "").strip("")
+            listPar.append(parag)
+            fullPar = " ".join(listPar)
+            detailList[0]['content'] = fullPar
+            
+        fullPar = ""
+        listPar = []
+    
+    return detailList
+

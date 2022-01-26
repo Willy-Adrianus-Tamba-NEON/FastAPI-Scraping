@@ -51,14 +51,9 @@ async def custom_swagger_ui_html():
 
 
 app.include_router(
-    InformationRouter.router,
-    tags=["Information"],
-)
-
-app.include_router(
     NewsRouter.router,
-    tags=["katadata"],
-    prefix="/katadata",
+    tags=["willy"],
+    prefix="/willy",
     dependencies=[Depends(verify_token)]
 )
 
