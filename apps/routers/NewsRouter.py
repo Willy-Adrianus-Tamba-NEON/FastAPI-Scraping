@@ -32,7 +32,7 @@ async def get_url_news_detail(response: Response, url:Optional[str]=None):
 @router.get("/get_news_detail")
 async def get_news_detail(response: Response):
     result = NewsController.get_news_detail()
-    response.status_code = result.status
+    # response.status_code = result.status
     return result
 
 @router.post("/save_news")

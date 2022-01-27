@@ -1,10 +1,11 @@
 from apps.helper import Log
 from apps.models import schema, db
 from unittest import result
-from apps.utils.News import get_news_detail, get_url_news_detail, get_list_article
+from apps.utils.News import get_news_detail, get_news_detail_full, get_url_news_detail, get_list_article
 from apps.schemas.Response import BaseResponse
 from apps.schemas.NewsSchema import ResponseNews, ResponseListNews
 from apps.models.NewsModel import News
+from orator.exceptions.orm import ModelNotFound
 
 class NewsController(object):
     @classmethod
@@ -55,14 +56,24 @@ class NewsController(object):
         result = BaseResponse()
         result.status = 404
         try:
-            data = get_news_detail()
+            data = get_news_detail_full()
             result.status = 200
             result.message = "Success"
             result.data = data
             Log.info(result.message)
 
-            # Insert scrape ke db
-            db.table('kata_data').insert(data)
+            # Cek apakah ada title yang sama di db. Jika tidak, insert scrape ke db
+            try:
+                for x in range(0, len(data)):
+                    if data[x]['title'] not in News.lists("title"):
+                        db.table('kata_data').insert(data[x])
+                        Log.info("News doesn't exist - saved to db")
+                    else:
+                        Log.info("News exist - not saved to db")
+
+            except Exception as e:
+                Log.info(e)
+            
 
         except Exception as e:
             Log.error(e)
@@ -83,7 +94,7 @@ class NewsController(object):
                 table.string("img_src")
                 table.string("author")
                 table.string("publisheddate")
-                table.string("content")
+                table.text("content")
 
         try:
             if input_data is not None:
