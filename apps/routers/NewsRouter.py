@@ -6,16 +6,6 @@ from apps.controllers.NewsController import NewsController
 
 router = APIRouter()
 
-# Json dump input
-add_news_example = json.dumps({
-    "title": "",
-    "link": "",
-    "img_src": "",
-    "author": "",
-    "publisheddate": "",
-    "content": "",
-}, indent = 2)
-
 
 # Endpoint
 @router.get("/get_list_article")
@@ -35,13 +25,14 @@ async def get_news_detail(response: Response):
     # response.status_code = result.status
     return result
 
+
 @router.post("/save_news")
-async def save_news(response: Response, input_data=Body(..., example=add_news_example)):
-    result = NewsController.save_news(input_data=input_data)
+async def save_news(response: Response):
+    result = NewsController.save_news()
     return result
 
 @router.delete("/delete_news")
-async def delete_news(response: Response, title:Optional[str]):
+async def delete_news(response: Response, title:Optional[str]=None):
     result = NewsController.delete_news(title)
     return result
 

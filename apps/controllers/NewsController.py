@@ -62,19 +62,6 @@ class NewsController(object):
             result.data = data
             Log.info(result.message)
 
-            # Cek apakah ada title yang sama di db. Jika tidak, insert scrape ke db
-            try:
-                for x in range(0, len(data)):
-                    if data[x]['title'] not in News.lists("title"):
-                        db.table('kata_data').insert(data[x])
-                        Log.info("News doesn't exist - saved to db")
-                    else:
-                        Log.info("News exist - not saved to db")
-
-            except Exception as e:
-                Log.info(e)
-            
-
         except Exception as e:
             Log.error(e)
             result.status = 400
@@ -83,7 +70,7 @@ class NewsController(object):
         return result
 
     @classmethod
-    def save_news(cls, input_data=None):
+    def save_news(cls):
         result = BaseResponse()
         result.status = 400
 
@@ -97,15 +84,24 @@ class NewsController(object):
                 table.text("content")
 
         try:
-            if input_data is not None:
-                News.insert(input_data)
-                result.status = 200
-                result.message = "Success"
-                result.data = input_data
-                Log.info(result.message)
-            else:
-                result.status = 400
-                result.message = "No input data"
+            data = get_news_detail_full()
+            result.status = 200
+            result.message = "Success"
+            result.data = data
+            Log.info(result.message)
+
+            # Cek apakah ada title yang sama di db. Jika tidak, insert scrape ke db
+            try:
+                for x in range(0, len(data)):
+                    if data[x]['title'] not in News.lists("title"):
+                        db.table('kata_data').insert(data[x])
+                        # result.data = data[x]
+                        Log.info("News doesn't exist - saved to db")
+                    else:
+                        Log.info("News exist - not saved to db")
+
+            except Exception as e:
+                Log.info(e)
 
         except Exception as e:
             Log.error(e)
